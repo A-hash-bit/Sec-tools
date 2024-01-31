@@ -1,0 +1,102 @@
+Prowler is an Open Source security tool to perform AWS, GCP and Azure 
+- security best practices assessments, audits(detailed analysis), incident response(what can be done for issue, creates report), continuous monitoring, 
+  hardening (eg. ec2 what ports need to be open) and forensics readiness(if crash happens what can be done).
+
+Installation
+- create an ubuntu ec2 instance, create user and give required permission(Admin)+SecurityAudit+viweonlyaccess And add an inline policy specially for prowler -
+- {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "account:Get*",
+        "appstream:Describe*",
+        "appstream:List*",
+        "backup:List*",
+        "cloudtrail:GetInsightSelectors",
+        "codeartifact:List*",
+        "codebuild:BatchGet*",
+        "dlm:Get*",
+        "drs:Describe*",
+        "ds:Get*",
+        "ds:Describe*",
+        "ds:List*",
+        "ec2:GetEbsEncryptionByDefault",
+        "ecr:Describe*",
+        "ecr:GetRegistryScanningConfiguration",
+        "elasticfilesystem:DescribeBackupPolicy",
+        "glue:GetConnections",
+        "glue:GetSecurityConfiguration*",
+        "glue:SearchTables",
+        "lambda:GetFunction*",
+        "logs:FilterLogEvents",
+        "macie2:GetMacieSession",
+        "s3:GetAccountPublicAccessBlock",
+        "shield:DescribeProtection",
+        "shield:GetSubscriptionState",
+        "securityhub:BatchImportFindings",
+        "securityhub:GetFindings",
+        "ssm:GetDocument",
+        "ssm-incidents:List*",
+        "support:Describe*",
+        "tag:GetTagKeys",
+        "wellarchitected:List*"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "AllowMoreReadForProwler"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:*::/restapis/*",
+        "arn:aws:apigateway:*::/apis/*"
+      ]
+    }
+  ]
+}
+- create creds for this prowler user for cli access.
+- ssh to instance
+- download & install awscli use .zip or pkg manager like below
+  -   1  sudo apt update
+      2  sudo apt install awscli
+      3  aws --version
+- aws configure -
+- Install python 3.9
+  - sudo apt update
+  - sudo apt install software-properties-common
+  - sudo add-apt-repository ppa:deadsnakes/ppa
+  - sudo apt install python3.9
+  - python3.9 --version
+  - sudo apt update
+  - sudo apt install python3.9-venv python3.9-distutils
+  - wget https://bootstrap.pypa.io/get-pip.py
+  - sudo python3.9 get-pip.py
+  - pip3.9 --version
+  - pip --version
+  - pip3.9 install cffi 
+  - pip install prowler
+  - prowler -v
+
+# Prowler cmds
+- prowler aws --list-categories
+ -There are 6 available categories.
+  - secrets
+  - internet-exposed
+  - encryption
+  - trustboundaries
+  - logging
+  - forensics-ready
+
+
+- prowler aws --list-complaince (It will give compliance rules)
+- prowler aws --list-services (Which services it can scan)
+- prowler aws --service s3 ec2 (only for these services)
+- prowler aws (for all services)
+- prowler aws --exclude-checks s3_bucket_public_access
+
+* U will get resultin cmd line and detailed results at /home/ubuntu/output/ in multuple file formats.
+* Prowler has many build in rules/compliances against which it run the resources and give output.
